@@ -10,7 +10,7 @@ import sys
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = BASE_DIR
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
-import provider
+import utils.provider as provider
 
 def pc_normalize(pc):
     l = pc.shape[0]
@@ -29,20 +29,29 @@ class ModelNetDataset():
         if modelnet10:
             self.catfile = os.path.join(self.root, 'modelnet10_shape_names.txt')
         else:
-            self.catfile = os.path.join(self.root, 'shape_names.txt')
+            # self.catfile = os.path.join(self.root, 'modelnet40_shape_names.txt')
+            self.catfile = os.path.join(self.root, 'stl_featurenet_shape_names.txt')
         self.cat = [line.rstrip() for line in open(self.catfile)]
         self.classes = dict(zip(self.cat, range(len(self.cat))))  
         self.normal_channel = normal_channel
-        
+        cat_dict = dict(zip([str(i) for i in range(len(self.cat))], self.cat))
         shape_ids = {}
         if modelnet10:
             shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet10_train.txt'))] 
             shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet10_test.txt'))]
         else:
-            shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet40_train.txt'))] 
-            shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet40_test.txt'))]
+            # shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'modelnet40_train.txt'))] 
+            # shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'modelnet40_test.txt'))]
+            shape_ids['train'] = [line.rstrip() for line in open(os.path.join(self.root, 'stl_featurenet_train.txt'))] 
+            shape_ids['test']= [line.rstrip() for line in open(os.path.join(self.root, 'stl_featurenet_test.txt'))]
         assert(split=='train' or split=='test')
-        shape_names = ['_'.join(x.split('_')[0:-1]) for x in shape_ids[split]]
+        # print(shape_ids[split])
+        shape_names = [cat_dict['_'.join(x.split('_')[0:-1])] for x in shape_ids[split]]
+        
+        # shape_names = ['_'.join(x.split('_')[0:-1]) for x in shape_ids[split]]
+        # test_empty = [i for i, x in enumerate(shape_names) if x == '']
+        # print(shape_ids[split][test_empty[0]-4:test_empty[0]+4])
+        
         # list of (shape_name, shape_txt_file_path) tuple
         self.datapath = [(shape_names[i], os.path.join(self.root, shape_names[i], shape_ids[split][i])+'.txt') for i in range(len(shape_ids[split]))]
 
@@ -77,7 +86,10 @@ class ModelNetDataset():
             point_set, cls = self.cache[index]
         else:
             fn = self.datapath[index]
+            # print(self.classes)
+            # print(self.datapath)
             cls = self.classes[self.datapath[index][0]]
+            
             cls = np.array([cls]).astype(np.int32)
             point_set = np.loadtxt(fn[1],delimiter=',').astype(np.float32)
             # Take the first npoints
@@ -128,7 +140,9 @@ class ModelNetDataset():
         return batch_data, batch_label
     
 if __name__ == '__main__':
-    d = ModelNetDataset(root = '../data/modelnet40_normal_resampled', split='test')
+    # d = ModelNetDataset(root = 'data\\modelnet40_normal_resampled', split='test')
+    d = ModelNetDataset(root = '.\\pointnet2\\data\\stl_featurenet', split='train')
+
     print(d.shuffle)
     print(len(d))
     import time

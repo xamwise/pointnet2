@@ -16,7 +16,7 @@ REGISTER_OP("ThreeNN")
     .Output("idx: int32")
     .SetShapeFn([](::tensorflow::shape_inference::InferenceContext* c) {
         c->set_output(0, c->input(0));
-        c->set_output(1, c->input(0));
+        c->set_output(1, c->input(0)); 
         return Status::OK();
     });
 REGISTER_OP("ThreeInterpolate")

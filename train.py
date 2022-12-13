@@ -17,8 +17,8 @@ ROOT_DIR = BASE_DIR
 sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
-import provider
-import tf_util
+import utils.provider as provider
+# import tf_util
 import modelnet_dataset
 import modelnet_h5_dataset
 
@@ -130,7 +130,7 @@ def train():
             accuracy = tf.reduce_sum(tf.cast(correct, tf.float32)) / float(BATCH_SIZE)
             tf.summary.scalar('accuracy', accuracy)
 
-            print "--- Get training operator"
+            print("--- Get training operator")
             # Get training operator
             learning_rate = get_learning_rate(batch)
             tf.summary.scalar('learning_rate', learning_rate)

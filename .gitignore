@@ -1,0 +1,7 @@
+*.STL
+*.pcd
+*.ply
+# **/modelnet40_normal_resampled
+# *.txt
+**/data
+__pycache__
