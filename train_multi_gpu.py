@@ -19,7 +19,7 @@ ROOT_DIR = BASE_DIR
 sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
-import provider
+import utils.provider as provider
 import tf_util
 import modelnet_dataset
 import modelnet_h5_dataset
@@ -43,6 +43,7 @@ EPOCH_CNT = 0
 
 NUM_GPUS = FLAGS.num_gpus
 BATCH_SIZE = FLAGS.batch_size
+print(f"{BATCH_SIZE=}, {NUM_GPUS=}")
 assert(BATCH_SIZE % NUM_GPUS == 0)
 DEVICE_BATCH_SIZE = BATCH_SIZE / NUM_GPUS
 
@@ -182,10 +183,8 @@ def train():
                 with tf.variable_scope(tf.get_variable_scope(), reuse=True):
                     with tf.device('/gpu:%d'%(i)), tf.name_scope('gpu_%d'%(i)) as scope:
                         # Evenly split input data to each GPU
-                        pc_batch = tf.slice(pointclouds_pl,
-                            [i*DEVICE_BATCH_SIZE,0,0], [DEVICE_BATCH_SIZE,-1,-1])
-                        label_batch = tf.slice(labels_pl,
-                            [i*DEVICE_BATCH_SIZE], [DEVICE_BATCH_SIZE])
+                        pc_batch = tf.slice(pointclouds_pl,[i*DEVICE_BATCH_SIZE,0,0], [DEVICE_BATCH_SIZE,-1,-1])
+                        label_batch = tf.slice(labels_pl,[i*DEVICE_BATCH_SIZE], [DEVICE_BATCH_SIZE])
 
                         pred, end_points = MODEL.get_model(pc_batch,
                             is_training=is_training_pl, bn_decay=bn_decay)
