@@ -121,14 +121,14 @@ if __name__ == '__main__':
 
     i = 500
     ps, normal, seg = d[i]
-    print d.datapath[i]
-    print np.max(seg), np.min(seg)
+    print(d.datapath[i])
+    print(np.max(seg), np.min(seg))
     print(ps.shape, seg.shape, normal.shape)
-    print ps
-    print normal
+    print(ps)
+    print(normal)
     
     sys.path.append('../utils')
-    import show3d_balls
+    import utils.show3d_balls as show3d_balls
     show3d_balls.showpoints(ps, normal+1, ballradius=8)
 
     d = PartNormalDataset(root = '../data/shapenetcore_partanno_segmentation_benchmark_v0_normal', classification = True)
